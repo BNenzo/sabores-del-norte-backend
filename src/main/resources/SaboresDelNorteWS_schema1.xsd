@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<xs:schema version="1.0" targetNamespace="http://services.saboresdelnorte.das.ubp.edu.ar/" xmlns:tns="http://services.saboresdelnorte.das.ubp.edu.ar/" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+
+  <xs:element name="ActualizarContenidosNoPublicadosRequest" type="tns:ActualizarContenidosNoPublicadosRequest"/>
+
+  <xs:element name="ActualizarContenidosNoPublicadosResponse" type="tns:ActualizarContenidosNoPublicadosResponse"/>
+
+  <xs:element name="CrearReservaDesdeRistorinoRequest" type="tns:CrearReservaDesdeRistorinoRequest"/>
+
+  <xs:element name="CrearReservaDesdeRistorinoResponse" type="tns:CrearReservaDesdeRistorinoResponse"/>
+
+  <xs:element name="ObtenerContenidosNoPublicadosRequest" type="tns:ObtenerContenidosNoPublicadosRequest"/>
+
+  <xs:element name="ObtenerContenidosNoPublicadosResponse" type="tns:ObtenerContenidosNoPublicadosResponse"/>
+
+  <xs:element name="ObtenerDisponibilidadHorariaZonaRequest" type="tns:ObtenerDisponibilidadHorariaZonaRequest"/>
+
+  <xs:element name="ObtenerDisponibilidadHorariaZonaResponse" type="tns:ObtenerDisponibilidadHorariaZonaResponse"/>
+
+  <xs:element name="RegistrarClickContenidoRequest" type="tns:RegistrarClickContenidoRequest"/>
+
+  <xs:element name="RegistrarClickContenidoResponse" type="tns:RegistrarClickContenidoResponse"/>
+
+  <xs:complexType name="ObtenerContenidosNoPublicadosRequest">
+    <xs:sequence/>
+  </xs:complexType>
+
+  <xs:complexType name="ObtenerContenidosNoPublicadosResponse">
+    <xs:sequence>
+      <xs:element name="SoapStringResponse" type="xs:string" minOccurs="0"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="CrearReservaDesdeRistorinoRequest">
+    <xs:sequence>
+      <xs:element name="Body" type="xs:string" minOccurs="0"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="CrearReservaDesdeRistorinoResponse">
+    <xs:sequence>
+      <xs:element name="SoapStringResponse" type="xs:string" minOccurs="0"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="ObtenerDisponibilidadHorariaZonaRequest">
+    <xs:sequence>
+      <xs:element name="Body" type="xs:string" minOccurs="0"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="ObtenerDisponibilidadHorariaZonaResponse">
+    <xs:sequence>
+      <xs:element name="SoapStringResponse" type="xs:string" minOccurs="0"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="ActualizarContenidosNoPublicadosRequest">
+    <xs:sequence>
+      <xs:element name="Body" type="xs:string" minOccurs="0"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="ActualizarContenidosNoPublicadosResponse">
+    <xs:sequence/>
+  </xs:complexType>
+
+  <xs:complexType name="RegistrarClickContenidoRequest">
+    <xs:sequence>
+      <xs:element name="Body" type="xs:string" minOccurs="0"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="RegistrarClickContenidoResponse">
+    <xs:sequence/>
+  </xs:complexType>
+</xs:schema>
+

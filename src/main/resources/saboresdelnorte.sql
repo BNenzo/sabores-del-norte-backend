@@ -1,0 +1,728 @@
+USE sabores_del_norte;
+
+DROP TABLE IF EXISTS clicks_contenidos;
+DROP TABLE IF EXISTS contenidos;
+DROP TABLE IF EXISTS especialidades_alimentarias_sucursales;
+DROP TABLE IF EXISTS especialidades_alimentarias;
+DROP TABLE IF EXISTS tipos_comidas_sucursales;
+DROP TABLE IF EXISTS tipos_comidas;
+DROP TABLE IF EXISTS estilos_sucursales;
+DROP TABLE IF EXISTS estilos;
+DROP TABLE IF EXISTS reservas_sucursales;
+DROP TABLE IF EXISTS clientes;
+DROP TABLE IF EXISTS zonas_turnos_sucursales;
+DROP TABLE IF EXISTS turnos_sucursales;
+DROP TABLE IF EXISTS zonas_sucursales;
+DROP TABLE IF EXISTS zonas;
+DROP TABLE IF EXISTS sucursales;
+DROP TABLE IF EXISTS restaurantes;
+DROP TABLE IF EXISTS categorias_precios;
+DROP TABLE IF EXISTS localidades;
+DROP TABLE IF EXISTS provincias;
+
+CREATE TABLE provincias (
+    cod_provincia CHAR(5) PRIMARY KEY,
+    nom_provincia VARCHAR(100) NOT NULL
+);
+
+INSERT INTO provincias (cod_provincia, nom_provincia) VALUES
+('BSAS','Buenos Aires'),
+('CAT','Catamarca'),
+('CHA','Chaco'),
+('CHU','Chubut'),
+('CBA','Córdoba'),
+('COR','Corrientes'),
+('ER','Entre Ríos'),
+('FOR','Formosa'),
+('JUJ','Jujuy'),
+('LP','La Pampa'),
+('LR','La Rioja'),
+('MEN','Mendoza'),
+('MIS','Misiones'),
+('NEU','Neuquén'),
+('RN','Río Negro'),
+('SAL','Salta'),
+('SJ','San Juan'),
+('SL','San Luis'),
+('SC','Santa Cruz'),
+('SF','Santa Fe'),
+('SE','Santiago del Estero'),
+('TF','Tierra del Fuego'),
+('TUC','Tucumán'),
+('CABA','Ciudad Autónoma de Buenos Aires');
+
+CREATE TABLE localidades (
+    nro_localidad INT PRIMARY KEY,
+    nom_localidad VARCHAR(50) NOT NULL,
+    cod_provincia CHAR(5) NOT NULL,
+    FOREIGN KEY (cod_provincia) REFERENCES provincias(cod_provincia)
+);
+
+INSERT INTO localidades (nro_localidad, nom_localidad, cod_provincia) VALUES
+(1,'Córdoba Capital','CBA'),(2,'Villa Carlos Paz','CBA'),(3,'Río Cuarto','CBA'),
+(4,'Villa María','CBA'),(5,'Alta Gracia','CBA'),(6,'Jesús María','CBA'),
+(7,'La Falda','CBA'),(8,'Cosquín','CBA'),(9,'Río Tercero','CBA'),(10,'San Francisco','CBA');
+
+CREATE TABLE categorias_precios (
+    nro_categoria INT PRIMARY KEY,
+    nom_categoria VARCHAR(50) NOT NULL
+);
+
+INSERT INTO categorias_precios VALUES
+(1, 'Económico/Bajo'), (2, 'Medio'), (3, 'Alto/Premium'), (4, 'De lujo');
+
+CREATE TABLE restaurantes (
+    nro_restaurante INT PRIMARY KEY,
+    razon_social VARCHAR(50) NOT NULL,
+    cuit CHAR(11) UNIQUE NOT NULL
+);
+
+INSERT INTO restaurantes VALUES (1, 'Sabores del Norte', '30999999111');
+
+CREATE TABLE sucursales (
+    nro_restaurante INT NOT NULL,
+    nro_sucursal INT NOT NULL,
+    nom_sucursal VARCHAR(100) NOT NULL,
+    calle VARCHAR(100) NOT NULL,
+    nro_calle INT,
+    barrio VARCHAR(100),
+    nro_localidad INT NOT NULL,
+    cod_postal VARCHAR(10),
+    telefonos VARCHAR(50),
+    total_comensales INT,
+    min_tolerancia_reserva INT,
+    nro_categoria INT NOT NULL,
+    PRIMARY KEY (nro_restaurante, nro_sucursal),
+    FOREIGN KEY (nro_restaurante) REFERENCES restaurantes(nro_restaurante),
+    FOREIGN KEY (nro_localidad) REFERENCES localidades(nro_localidad),
+    FOREIGN KEY (nro_categoria) REFERENCES categorias_precios(nro_categoria)
+);
+
+INSERT INTO sucursales VALUES
+(1,1,'Sabores del Norte Centro','27 de Abril',200,'Centro',1,'5000','0351-4000001',50,10,3),
+(1,2,'Sabores del Norte Cerro de las Rosas','Rafael Núñez',4000,'Cerro de las Rosas',1,'5009','0351-4000002',45,10,3);
+
+CREATE TABLE zonas (
+    cod_zona VARCHAR(15) PRIMARY KEY,
+    nom_zona VARCHAR(100) NOT NULL
+);
+
+INSERT INTO zonas (cod_zona, nom_zona) VALUES
+('barra','Barra'),
+('salon','Salon'),
+('patio','Patio');
+
+
+CREATE TABLE zonas_sucursales (
+    nro_restaurante INT NOT NULL,
+    nro_sucursal INT NOT NULL,
+    cod_zona VARCHAR(15) NOT NULL,
+    cant_comensales INT NOT NULL,
+    permite_menores INT NOT NULL,
+    habilitada INT NOT NULL,
+    PRIMARY KEY (nro_restaurante, nro_sucursal, cod_zona),
+    FOREIGN KEY (nro_restaurante, nro_sucursal)
+        REFERENCES sucursales (nro_restaurante, nro_sucursal),
+    FOREIGN KEY (cod_zona) REFERENCES zonas (cod_zona)
+);
+
+INSERT INTO zonas_sucursales VALUES 
+(1,1,'barra',10,0,1),
+(1,1,'salon',20,1,1),
+(1,1,'patio',20,1,1),
+
+(1,2,'barra',5,0,1),
+(1,2,'salon',20,1,1),
+(1,2,'patio',20,1,1);
+
+CREATE TABLE turnos_sucursales (
+    nro_restaurante INT NOT NULL,
+    nro_sucursal INT NOT NULL,
+    hora_desde TIME NOT NULL,
+    hora_hasta TIME NOT NULL,
+    habilitado INT NOT NULL,
+    PRIMARY KEY (nro_restaurante, nro_sucursal, hora_desde),
+    FOREIGN KEY (nro_restaurante, nro_sucursal)
+        REFERENCES sucursales (nro_restaurante, nro_sucursal)
+);
+
+INSERT INTO turnos_sucursales VALUES
+-- Nueva Córdoba
+(1,1,'13:00','14:00',1),
+(1,1,'21:00','22:00',1),
+-- Güemes
+(1,2,'12:00','14:00',1),
+(1,2,'20:00','22:30',1);
+
+CREATE TABLE zonas_turnos_sucursales (
+    nro_restaurante INT NOT NULL,
+    nro_sucursal INT NOT NULL,
+    cod_zona VARCHAR(15) NOT NULL,
+    hora_desde TIME NOT NULL,
+    permite_menores INT NOT NULL DEFAULT 1,
+    PRIMARY KEY (nro_restaurante, nro_sucursal, cod_zona, hora_desde),
+    FOREIGN KEY (nro_restaurante, nro_sucursal, hora_desde)
+        REFERENCES turnos_sucursales (nro_restaurante, nro_sucursal, hora_desde),
+    FOREIGN KEY (cod_zona) REFERENCES zonas (cod_zona)
+);
+
+INSERT INTO zonas_turnos_sucursales VALUES
+(1,1,'barra','13:00',0),
+(1,1,'barra','21:00',0),
+
+(1,1,'salon','13:00',1),
+(1,1,'salon','21:00',1),
+
+(1,1,'patio','13:00',1),
+(1,1,'patio','21:00',1),
+
+(1,2,'barra','12:00',0),
+(1,2,'barra','20:00',0),
+
+(1,2,'salon','12:00',0),
+(1,2,'salon','20:00',0),
+
+(1,2,'patio','12:00',0),
+(1,2,'patio','20:00',0);
+
+CREATE TABLE  clientes (
+    nro_cliente INT PRIMARY KEY IDENTITY (1,1),
+    apellido VARCHAR(100) NOT NULL,
+    nombre VARCHAR(100) NOT NULL,
+    correo VARCHAR(150) UNIQUE NOT NULL,
+    telefonos VARCHAR(50)
+);
+
+INSERT INTO clientes (apellido, nombre, correo, telefonos) VALUES
+('Letona','Renzo','renzo.letona@example.com','351-1112233');
+
+CREATE TABLE reservas_sucursales (
+    cod_reserva VARCHAR(50) PRIMARY KEY,
+    fecha_hora_registro DATETIME NOT NULL,
+    nro_cliente INT NOT NULL,
+    fecha_reserva DATE NOT NULL,
+    nro_restaurante INT NOT NULL,
+    nro_sucursal INT NOT NULL,
+    cod_zona VARCHAR(15) NOT NULL,
+    hora_reserva TIME NOT NULL,
+    cant_adultos INT NOT NULL,
+    cant_menores INT DEFAULT 0,
+    costo_reserva DECIMAL(10,2) NOT NULL,
+    cancelada INT DEFAULT 0,
+    fecha_cancelacion DATE,
+    FOREIGN KEY (nro_cliente) REFERENCES clientes (nro_cliente),
+    FOREIGN KEY (nro_restaurante, nro_sucursal, cod_zona, hora_reserva)
+        REFERENCES zonas_turnos_sucursales (nro_restaurante, nro_sucursal, cod_zona, hora_desde)
+);
+
+CREATE TABLE estilos (
+    nro_estilo INT PRIMARY KEY,
+    nom_estilo VARCHAR(100) NOT NULL
+);
+
+
+INSERT INTO estilos VALUES
+(1, 'Gourmet'),
+(2, 'Casual'),
+(3, 'Comida rápida / Fast food'),
+(4, 'Buffet libre'),
+(5, 'Bistró'),
+(6, 'Food truck'),
+(7, 'Restaurante tradicional'),
+(8, 'Bar / Tapas'),
+(9, 'Cafetería'),
+(10, 'Delivery'),
+(11, 'Fine dining');
+
+CREATE TABLE estilos_sucursales (
+    nro_restaurante INT NOT NULL,
+    nro_sucursal INT NOT NULL,
+    nro_estilo INT NOT NULL,
+    habilitado INT NOT NULL DEFAULT 1,
+    PRIMARY KEY (nro_restaurante, nro_sucursal, nro_estilo),
+    FOREIGN KEY (nro_restaurante, nro_sucursal)
+        REFERENCES sucursales (nro_restaurante, nro_sucursal),
+    FOREIGN KEY (nro_estilo) REFERENCES estilos (nro_estilo)
+);
+
+INSERT INTO estilos_sucursales VALUES
+(1,1,7,1),
+(1,2,7,1);
+
+CREATE TABLE tipos_comidas (
+    nro_tipo_comida INT PRIMARY KEY,
+    nom_tipo_comida VARCHAR(100) NOT NULL
+);
+
+INSERT INTO tipos_comidas VALUES
+(1, 'Italiana'),
+(2, 'Mexicana'),
+(3, 'Española'),
+(4, 'Francesa'),
+(5, 'Japonesa'),
+(6, 'China'),
+(7, 'Tailandesa'),
+(8, 'India'),
+(9, 'Mediterránea'),
+(10, 'Argentina'),
+(11, 'Peruana'),
+(12, 'Árabe / Medio Oriente'),
+(13, 'Americana'),
+(14, 'Fusión'),
+(15, 'Internacional');
+
+CREATE TABLE tipos_comidas_sucursales (
+    nro_restaurante INT NOT NULL,
+    nro_sucursal INT NOT NULL,
+    nro_tipo_comida INT NOT NULL,
+    habilitado INT NOT NULL DEFAULT 1,
+    PRIMARY KEY (nro_restaurante, nro_sucursal, nro_tipo_comida),
+    FOREIGN KEY (nro_restaurante, nro_sucursal)
+        REFERENCES sucursales (nro_restaurante, nro_sucursal),
+    FOREIGN KEY (nro_tipo_comida) REFERENCES tipos_comidas (nro_tipo_comida)
+);
+
+INSERT INTO tipos_comidas_sucursales VALUES
+(1,1,14,1),
+(1,2,14,1);
+
+CREATE TABLE especialidades_alimentarias (
+    nro_restriccion INT PRIMARY KEY,
+    nom_restriccion VARCHAR(100) NOT NULL
+);
+
+INSERT INTO especialidades_alimentarias VALUES
+(1, 'Vegetariana'),
+(2, 'Vegana'),
+(3, 'Sin gluten / Celíaco'),
+(4, 'Sin lactosa'),
+(5, 'Baja en calorías'),
+(6, 'Orgánica'),
+(7, 'Diabéticos (sin azúcar añadida)');
+
+CREATE TABLE especialidades_alimentarias_sucursales (
+    nro_restaurante INT NOT NULL,
+    nro_sucursal INT NOT NULL,
+    nro_restriccion INT NOT NULL,
+    habilitada INT NOT NULL DEFAULT 1,
+    PRIMARY KEY (nro_restaurante, nro_sucursal, nro_restriccion),
+    FOREIGN KEY (nro_restaurante, nro_sucursal)
+        REFERENCES sucursales (nro_restaurante, nro_sucursal),
+    FOREIGN KEY (nro_restriccion)
+        REFERENCES especialidades_alimentarias (nro_restriccion)
+);
+
+INSERT INTO especialidades_alimentarias_sucursales VALUES
+(1,1,1,1),(1,2,1,1);
+
+CREATE TABLE contenidos (
+    nro_restaurante INT NOT NULL,
+    nro_contenido INT NOT NULL,
+    contenido_a_publicar TEXT NOT NULL,
+    imagen_a_publicar VARCHAR(255),
+    publicado INT NOT NULL DEFAULT 0,
+    costo_click DECIMAL(10,2) NOT NULL DEFAULT 0,
+    nro_sucursal INT,
+    cod_contenido_restaurante VARCHAR(255), -- {PREFIJO - {nroRestaurante} - {nroSucursal} - {nroContenido}}
+    PRIMARY KEY (nro_restaurante, nro_contenido),
+    FOREIGN KEY (nro_restaurante) REFERENCES restaurantes (nro_restaurante),
+    FOREIGN KEY (nro_restaurante, nro_sucursal)
+        REFERENCES sucursales (nro_restaurante, nro_sucursal)
+);
+
+INSERT INTO contenidos VALUES
+(1,1,'Locro Norteño','https://www.tucumanturismo.gob.ar/public/img/galerialocro2_t1ntkke9_25-06-2024.jpg',0,37.00,1, 'SDN-1-1-1'),
+(1,2,'Empanadas Salteñas','https://caminosandinos.com.ar/wp-content/uploads/2020/08/empanadas-17-agosto.jpg',0,30.00,2, 'SDN-1-2-2');
+
+CREATE TABLE clicks_contenidos (
+    nro_restaurante INT NOT NULL,
+    nro_contenido INT NOT NULL,
+    nro_click INT NOT NULL,
+    fecha_hora_registro DATETIME NOT NULL,
+    nro_cliente INT,
+    costo_click DECIMAL(10,2) NOT NULL,
+    PRIMARY KEY (nro_restaurante, nro_contenido, nro_click),
+    FOREIGN KEY (nro_restaurante, nro_contenido)
+        REFERENCES contenidos (nro_restaurante, nro_contenido),
+    FOREIGN KEY (nro_cliente) REFERENCES clientes (nro_cliente)
+);
+
+IF OBJECT_ID('sp_get_provincias', 'P') IS NOT NULL
+    DROP PROCEDURE sp_get_provincias;
+GO
+
+CREATE PROCEDURE sp_get_provincias
+AS
+BEGIN
+    SET NOCOUNT ON;
+    SELECT 
+        cod_provincia, 
+        nom_provincia
+    FROM provincias
+    ORDER BY nom_provincia;
+END;
+GO
+
+
+IF OBJECT_ID('dbo.sp_insert_click_contenido', 'P') IS NOT NULL
+    DROP PROCEDURE dbo.sp_insert_click_contenido;
+GO
+
+CREATE OR ALTER PROCEDURE dbo.sp_insert_click_contenido
+    @cod_contenido_restaurante VARCHAR(255),
+    @nro_contenido       INT,
+    @nro_click           INT,
+    @fecha_hora_registro DATETIME,
+    @nro_cliente         INT,
+    @costo_click         DECIMAL(10,2)
+AS
+BEGIN
+    SET NOCOUNT ON;
+
+    DECLARE @nro_restaurante INT;
+
+    SELECT @nro_restaurante = nro_restaurante
+    FROM dbo.contenidos
+    WHERE cod_contenido_restaurante = @cod_contenido_restaurante;
+
+    IF @nro_restaurante IS NULL
+    BEGIN
+        ;THROW 50001, 'No se encontro el restaurante para el cod_contenido_restaurante indicado.', 1;
+    END
+
+    BEGIN TRY
+        BEGIN TRAN;
+
+        INSERT INTO dbo.clicks_contenidos (
+            nro_restaurante,
+            nro_contenido,
+            nro_click,
+            fecha_hora_registro,
+            nro_cliente,
+            costo_click
+        )
+        VALUES (
+            @nro_restaurante,
+            @nro_contenido,
+            @nro_click,
+            @fecha_hora_registro,
+            @nro_cliente,
+            @costo_click
+        );
+
+        COMMIT TRAN;
+    END TRY
+    BEGIN CATCH
+        IF XACT_STATE() <> 0 ROLLBACK TRAN;
+
+        THROW;
+    END CATCH
+END;
+GO
+
+
+
+-- OBTENER CONTENIDOS NO PUBLICADOS
+CREATE OR ALTER PROCEDURE sp_get_contenidos_no_publicados
+AS
+BEGIN
+    SET NOCOUNT ON;
+
+    SELECT
+        nro_restaurante,
+        nro_contenido,
+        contenido_a_publicar,
+        imagen_a_publicar,
+        publicado,
+        costo_click,
+        nro_sucursal,
+        cod_contenido_restaurante
+    FROM contenidos
+    WHERE publicado = 0;
+END
+GO
+
+
+-- INSERT CLIENTE DESDE RISTORINO SOLO SI NO EXISTE
+CREATE OR ALTER PROCEDURE sp_insert_cliente_desde_ristorino
+  @apellido VARCHAR(100),
+  @nombre VARCHAR(100),
+  @correo VARCHAR(150),
+  @telefonos VARCHAR(50)
+AS
+BEGIN
+  SET NOCOUNT ON;
+
+  IF NOT EXISTS (
+    SELECT 1
+    FROM clientes
+    WHERE correo = @correo
+  )
+  BEGIN
+    INSERT INTO clientes (
+      apellido,
+      nombre,
+      correo,
+      telefonos
+    )
+    VALUES (
+      @apellido,
+      @nombre,
+      @correo,
+      @telefonos
+    );
+  END
+
+  SELECT nro_cliente
+  FROM clientes
+  WHERE correo = @correo;
+END;
+GO
+
+
+-- INSERT DE UN TURNO
+CREATE OR ALTER PROCEDURE sp_crear_reserva_sucursal
+  @cod_reserva VARCHAR(50),
+  @nro_cliente INT,
+  @fecha_reserva DATE,
+  @nro_sucursal INT,
+  @cod_zona CHAR(5),
+  @hora_reserva TIME,
+  @cant_adultos INT,
+  @cant_menores INT,
+  @costo_reserva DECIMAL(10,2)
+AS
+BEGIN
+  SET NOCOUNT ON;
+
+  INSERT INTO reservas_sucursales (
+    cod_reserva,
+    fecha_hora_registro,
+    nro_cliente,
+    fecha_reserva,
+    nro_restaurante,
+    nro_sucursal,
+    cod_zona,
+    hora_reserva,
+    cant_adultos,
+    cant_menores,
+    costo_reserva,
+    cancelada,
+    fecha_cancelacion
+  )
+  VALUES (
+    @cod_reserva,
+    CURRENT_TIMESTAMP,
+    @nro_cliente,
+    @fecha_reserva,
+    1,
+    @nro_sucursal,
+    @cod_zona,
+    @hora_reserva,
+    @cant_adultos,
+    @cant_menores,
+    @costo_reserva,
+    0,
+    NULL
+  );
+END;
+GO
+
+
+-- ACTUALIZAR LA RESERVA DE UN CLIENTE
+CREATE OR ALTER PROCEDURE dbo.sp_actualizar_reserva_cliente
+    @cod_reserva        VARCHAR(50),
+    @fecha_reserva      DATE = NULL,
+    @hora_reserva       TIME = NULL,
+    @cant_adultos       INT = NULL,
+    @cant_menores       INT = NULL,
+    @fecha_cancelacion  DATE = NULL,
+    @cancelada          INT = NULL
+AS
+BEGIN
+    SET NOCOUNT ON;
+
+    BEGIN TRY
+        BEGIN TRAN;
+
+        IF NOT EXISTS (
+            SELECT 1
+            FROM dbo.reservas_sucursales
+            WHERE cod_reserva = @cod_reserva
+        )
+        BEGIN
+            ;THROW 50002, 'No existe una reserva con ese cod_reserva.', 1;
+        END
+
+        UPDATE rs
+        SET
+            rs.fecha_reserva      = COALESCE(@fecha_reserva, rs.fecha_reserva),
+            rs.hora_reserva       = COALESCE(@hora_reserva, rs.hora_reserva),
+            rs.cant_adultos       = COALESCE(@cant_adultos, rs.cant_adultos),
+            rs.cant_menores       = COALESCE(@cant_menores, rs.cant_menores),
+            rs.fecha_cancelacion  = COALESCE(@fecha_cancelacion, rs.fecha_cancelacion),
+            rs.cancelada          = COALESCE(@cancelada, rs.cancelada)
+        FROM dbo.reservas_sucursales AS rs
+        WHERE rs.cod_reserva = @cod_reserva;
+
+        COMMIT TRAN;
+    END TRY
+    BEGIN CATCH
+        IF XACT_STATE() <> 0
+            ROLLBACK TRAN;
+
+        THROW;
+    END CATCH
+END;
+GO
+
+-- ACTUALIZAR LOS CONTENIDOS NO PUBLICADOS A PUBLICADOS
+CREATE OR ALTER PROCEDURE dbo.sp_actualizar_contenido_no_publicado
+  @json NVARCHAR(MAX)
+AS
+BEGIN
+  SET NOCOUNT ON;
+
+  ;WITH items AS (
+    SELECT
+      nroRestaurante,
+      nroContenido,
+      costoClick
+    FROM OPENJSON(@json)
+    WITH (
+      nroRestaurante INT '$.nroRestaurante',
+      nroContenido   INT '$.nroContenido',
+      costoClick     DECIMAL(10,2) '$.costoClick'
+    )
+  )
+  UPDATE c
+     SET 
+        c.publicado = 1,
+        c.costo_click = COALESCE(i.costoClick, c.costo_click)
+  FROM dbo.contenidos c
+  INNER JOIN items i
+    ON 1 = c.nro_restaurante
+   AND i.nroContenido   = c.nro_contenido;
+END
+
+GO
+CREATE OR ALTER PROCEDURE dbo.sp_obtener_disponibilidad_por_zona
+    @nro_sucursal  INT,
+    @fecha_reserva DATE,
+    @cod_zona      VARCHAR(15)
+AS
+BEGIN
+    SET NOCOUNT ON;
+
+    SELECT
+        zts.nro_restaurante,
+        zts.nro_sucursal,
+        zts.cod_zona,
+        zs.cant_comensales,
+        zs.permite_menores,
+        zts.hora_desde,
+        ts.hora_hasta,
+        ts.habilitado,
+
+        ISNULL(SUM(rs.cant_adultos + rs.cant_menores), 0)       AS cantidad_reservada,
+        zs.cant_comensales
+            - ISNULL(SUM(rs.cant_adultos + rs.cant_menores), 0) AS cupo_disponible
+
+    FROM dbo.zonas_turnos_sucursales    AS zts
+
+    INNER JOIN dbo.zonas_sucursales     AS zs
+        ON  zs.nro_restaurante = zts.nro_restaurante
+        AND zs.nro_sucursal    = zts.nro_sucursal
+        AND zs.cod_zona        = zts.cod_zona
+
+    INNER JOIN dbo.turnos_sucursales    AS ts
+        ON  ts.nro_restaurante = zts.nro_restaurante
+        AND ts.nro_sucursal    = zts.nro_sucursal
+        AND ts.hora_desde      = zts.hora_desde
+
+    LEFT JOIN dbo.reservas_sucursales   AS rs
+        ON  rs.nro_restaurante = zts.nro_restaurante
+        AND rs.nro_sucursal    = zts.nro_sucursal
+        AND rs.cod_zona        = zts.cod_zona
+        AND rs.hora_reserva    = zts.hora_desde
+        AND rs.fecha_reserva   = @fecha_reserva
+        AND rs.cancelada       = 0              -- ⚠️ diferencia clave (ver abajo)
+
+    WHERE
+        zts.nro_sucursal = @nro_sucursal
+        AND zts.cod_zona = @cod_zona
+        AND ts.habilitado = 1
+        AND zs.habilitada = 1
+
+    GROUP BY
+        zts.nro_restaurante,
+        zts.nro_sucursal,
+        zts.cod_zona,
+        zs.cant_comensales,
+        zs.permite_menores,
+        zts.hora_desde,
+        ts.hora_hasta,
+        ts.habilitado
+
+    ORDER BY
+        zts.hora_desde;
+END
+GO
+
+
+
+-- ============================================================
+-- RESERVAS DE PRUEBA - fecha: 2026-06-15
+-- ============================================================
+
+-- ============================================================
+-- SUCURSAL 1 - Nueva Córdoba
+-- ============================================================
+
+-- -- ✅ TURNO CON CUPO DISPONIBLE - salon 13:00 (1 reserva de 3, quedan 17)
+-- INSERT INTO reservas_sucursales VALUES
+-- ('PK-1-1-001', GETDATE(), 1, '2026-06-15', 1, 1, 'salon', '13:00', 2, 1, 1500.00, 0, NULL);
+
+-- -- ⚠️ TURNO CASI LLENO - barra 13:00 (capacidad 10, metemos 9)
+-- INSERT INTO reservas_sucursales VALUES
+-- ('PK-1-1-002', GETDATE(), 1, '2026-06-15', 1, 1, 'barra', '13:00', 6, 0, 1500.00, 0, NULL),
+-- ('PK-1-1-003', GETDATE(), 1, '2026-06-15', 1, 1, 'barra', '13:00', 3, 0, 1500.00, 0, NULL);
+
+-- -- 🔴 TURNO LLENO - patio 21:00 (capacidad 20, metemos 20)
+-- INSERT INTO reservas_sucursales VALUES
+-- ('PK-1-1-004', GETDATE(), 1, '2026-06-15', 1, 1, 'patio', '21:00', 8, 2, 1500.00, 0, NULL),
+-- ('PK-1-1-005', GETDATE(), 1, '2026-06-15', 1, 1, 'patio', '21:00', 7, 3, 1500.00, 0, NULL);
+
+-- -- ============================================================
+-- -- SUCURSAL 2 - Güemes
+-- -- ============================================================
+
+-- -- ✅ TURNO CON CUPO DISPONIBLE - salon 12:00 (1 reserva de 4, quedan 16)
+-- INSERT INTO reservas_sucursales VALUES
+-- ('PK-1-2-001', GETDATE(), 1, '2026-06-15', 1, 2, 'salon', '12:00', 4, 0, 1500.00, 0, NULL);
+
+-- -- ⚠️ TURNO CASI LLENO - barra 20:00 (capacidad 5, metemos 4)
+-- INSERT INTO reservas_sucursales VALUES
+-- ('PK-1-2-002', GETDATE(), 1, '2026-06-15', 1, 2, 'barra', '20:00', 4, 0, 1500.00, 0, NULL);
+
+-- -- 🔴 TURNO LLENO - patio 20:00 (capacidad 20, metemos 20)
+-- INSERT INTO reservas_sucursales VALUES
+-- ('PK-1-2-003', GETDATE(), 1, '2026-06-15', 1, 2, 'patio', '20:00', 10, 4, 1500.00, 0, NULL),
+-- ('PK-1-2-004', GETDATE(), 1, '2026-06-15', 1, 2, 'patio', '20:00', 6, 0, 1500.00, 0, NULL);
+
+
+
+-- EXEC dbo.sp_obtener_disponibilidad_por_zona 1, '2026-06-15', 'salon'  -- disponible
+
+
+-- EXEC dbo.sp_obtener_disponibilidad_por_zona 1, '2026-06-15', 'barra'  -- casi lleno
+
+-- EXEC dbo.sp_obtener_disponibilidad_por_zona 1, '2026-06-15', 'patio'  -- lleno
+
+select * from clientes
+
+select * from contenidos
+
+select * from clicks_contenidos
+
+select * from reservas_sucursales
