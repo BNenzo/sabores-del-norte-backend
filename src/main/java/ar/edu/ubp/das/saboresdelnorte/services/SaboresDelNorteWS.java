@@ -23,6 +23,7 @@ import org.springframework.stereotype.Service;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 @Service
@@ -121,7 +122,8 @@ public class SaboresDelNorteWS {
         reservaCliente.getReserva().getCantMenores(),
         reservaCliente.getReserva().getCostoReserva());
 
-    return codReservaSucursal;
+    return new Gson().toJson(Map.of(
+        "codReservaSucursal", codReservaSucursal));
   }
 
   // OBTENER CONTENIDOS NO PUBLICADOS

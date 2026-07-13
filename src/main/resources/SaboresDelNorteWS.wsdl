@@ -18,12 +18,6 @@
   <message name="CrearReservaDesdeRistorinoResponse">
     <part name="parameters" element="tns:CrearReservaDesdeRistorinoResponse"/>
   </message>
-  <message name="ObtenerDisponibilidadHorariaZona">
-    <part name="parameters" element="tns:ObtenerDisponibilidadHorariaZonaRequest"/>
-  </message>
-  <message name="ObtenerDisponibilidadHorariaZonaResponse">
-    <part name="parameters" element="tns:ObtenerDisponibilidadHorariaZonaResponse"/>
-  </message>
   <message name="ObtenerContenidosNoPublicados">
     <part name="parameters" element="tns:ObtenerContenidosNoPublicadosRequest"/>
   </message>
@@ -36,6 +30,12 @@
   <message name="ActualizarContenidosNoPublicadosResponse">
     <part name="parameters" element="tns:ActualizarContenidosNoPublicadosResponse"/>
   </message>
+  <message name="ObtenerDisponibilidadHorariaZona">
+    <part name="parameters" element="tns:ObtenerDisponibilidadHorariaZonaRequest"/>
+  </message>
+  <message name="ObtenerDisponibilidadHorariaZonaResponse">
+    <part name="parameters" element="tns:ObtenerDisponibilidadHorariaZonaResponse"/>
+  </message>
   <portType name="SaboresDelNorteWS">
     <operation name="RegistrarClickContenido">
       <input wsam:Action="http://services.saboresdelnorte.das.ubp.edu.ar/SaboresDelNorteWS/RegistrarClickContenidoRequest" message="tns:RegistrarClickContenido"/>
@@ -45,10 +45,6 @@
       <input wsam:Action="http://services.saboresdelnorte.das.ubp.edu.ar/SaboresDelNorteWS/CrearReservaDesdeRistorinoRequest" message="tns:CrearReservaDesdeRistorino"/>
       <output wsam:Action="http://services.saboresdelnorte.das.ubp.edu.ar/SaboresDelNorteWS/CrearReservaDesdeRistorinoResponse" message="tns:CrearReservaDesdeRistorinoResponse"/>
     </operation>
-    <operation name="ObtenerDisponibilidadHorariaZona">
-      <input wsam:Action="http://services.saboresdelnorte.das.ubp.edu.ar/SaboresDelNorteWS/ObtenerDisponibilidadHorariaZonaRequest" message="tns:ObtenerDisponibilidadHorariaZona"/>
-      <output wsam:Action="http://services.saboresdelnorte.das.ubp.edu.ar/SaboresDelNorteWS/ObtenerDisponibilidadHorariaZonaResponse" message="tns:ObtenerDisponibilidadHorariaZonaResponse"/>
-    </operation>
     <operation name="ObtenerContenidosNoPublicados">
       <input wsam:Action="http://services.saboresdelnorte.das.ubp.edu.ar/SaboresDelNorteWS/ObtenerContenidosNoPublicadosRequest" message="tns:ObtenerContenidosNoPublicados"/>
       <output wsam:Action="http://services.saboresdelnorte.das.ubp.edu.ar/SaboresDelNorteWS/ObtenerContenidosNoPublicadosResponse" message="tns:ObtenerContenidosNoPublicadosResponse"/>
@@ -56,6 +52,10 @@
     <operation name="ActualizarContenidosNoPublicados">
       <input wsam:Action="http://services.saboresdelnorte.das.ubp.edu.ar/SaboresDelNorteWS/ActualizarContenidosNoPublicadosRequest" message="tns:ActualizarContenidosNoPublicados"/>
       <output wsam:Action="http://services.saboresdelnorte.das.ubp.edu.ar/SaboresDelNorteWS/ActualizarContenidosNoPublicadosResponse" message="tns:ActualizarContenidosNoPublicadosResponse"/>
+    </operation>
+    <operation name="ObtenerDisponibilidadHorariaZona">
+      <input wsam:Action="http://services.saboresdelnorte.das.ubp.edu.ar/SaboresDelNorteWS/ObtenerDisponibilidadHorariaZonaRequest" message="tns:ObtenerDisponibilidadHorariaZona"/>
+      <output wsam:Action="http://services.saboresdelnorte.das.ubp.edu.ar/SaboresDelNorteWS/ObtenerDisponibilidadHorariaZonaResponse" message="tns:ObtenerDisponibilidadHorariaZonaResponse"/>
     </operation>
   </portType>
   <binding name="SaboresDelNorteWSPortBinding" type="tns:SaboresDelNorteWS">
@@ -78,15 +78,6 @@
         <soap:body use="literal"/>
       </output>
     </operation>
-    <operation name="ObtenerDisponibilidadHorariaZona">
-      <soap:operation soapAction=""/>
-      <input>
-        <soap:body use="literal"/>
-      </input>
-      <output>
-        <soap:body use="literal"/>
-      </output>
-    </operation>
     <operation name="ObtenerContenidosNoPublicados">
       <soap:operation soapAction=""/>
       <input>
@@ -97,6 +88,15 @@
       </output>
     </operation>
     <operation name="ActualizarContenidosNoPublicados">
+      <soap:operation soapAction=""/>
+      <input>
+        <soap:body use="literal"/>
+      </input>
+      <output>
+        <soap:body use="literal"/>
+      </output>
+    </operation>
+    <operation name="ObtenerDisponibilidadHorariaZona">
       <soap:operation soapAction=""/>
       <input>
         <soap:body use="literal"/>
